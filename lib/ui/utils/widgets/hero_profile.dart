@@ -4,11 +4,10 @@ import 'package:resume/ui/utils/const.dart';
 import 'package:resume/ui/utils/widgets/ripple_splash.dart';
 
 class HeroProfileWithRipple extends StatelessWidget {
-
-
   final AssetImage assetImage;
 
-  const HeroProfileWithRipple({Key? key,
+  const HeroProfileWithRipple({
+    Key? key,
     required this.assetImage,
   }) : super(key: key);
 
