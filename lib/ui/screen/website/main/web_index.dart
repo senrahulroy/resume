@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hovering/hovering.dart';
 import 'package:resume/framework/data_provider/mouse_hover/riverpod_provider.dart';
+import 'package:resume/framework/data_provider/on_hover_controller.dart';
 import 'package:resume/ui/utils/app_theme.dart';
 import 'package:resume/ui/utils/const.dart';
 import 'package:resume/ui/utils/images.dart';
@@ -167,20 +169,44 @@ class IndexWebsite extends StatelessWidget {
       itemCount: 5,
       shrinkWrap: true,
       itemBuilder: ((context, index) {
-        return OnHover(builder: (isHovered) {
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            height: 50.h,
-            width: isHovered ? 100.h : 50.h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: Colors.orangeAccent,
-            ),
-            child: MyFloatingBtn(
-              isHovered: isHovered,
-            ),
-          );
-        });
+        return Consumer(
+          builder: (BuildContext context, WidgetRef ref, Widget? child) {
+            final onHoverWatch = ref.watch(onHoverProvider);
+            return HoverWidget(
+              onHover: (event) {
+                onHoverWatch.updateIsHoveredList(index, true);
+                print("OnHovered${onHoverWatch.isHoveredList}");
+              },
+              hoverChild: InkWell(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Text(
+                          "HOME",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Icon(
+                          Icons.home,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              child: const Icon(
+                Icons.home,
+                color: Colors.white,
+              ),
+            );
+          },
+        );
       }),
       // itemBuilder: const MyFloatingBtn(),
     );
@@ -202,16 +228,18 @@ class CliperOrange extends CustomClipper<Path> {
 }
 
 class MyFloatingBtn extends StatelessWidget {
-  const MyFloatingBtn({super.key, required this.isHovered});
+  const MyFloatingBtn(
+      {super.key, required this.isHovered, required this.index});
 
-  final bool isHovered;
+  final List<bool> isHovered;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: isHovered
+        child: isHovered[index]
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: const [
